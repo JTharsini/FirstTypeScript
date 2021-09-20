@@ -74,8 +74,8 @@ interface PointInterfaceForClass
 
 class PointClass
 {
-    x: number;
-    y: number;
+    private x: number;
+    private y: number;
 
     /*
     // mandatory parameters
@@ -93,7 +93,15 @@ class PointClass
         this.y = y;
     }
 
-    draw(){
+    /*
+    // if constructor is written in this manner, TypeScript knows
+    // to generate private optional fields and it will initialize
+    // those values inside this
+    constructor(private x? : number, private y? : number)
+    {
+    }*/
+
+    draw(){// adding public modifier here is redundant: public draw() : since by default, it's public
         // ...
         console.log(this.x, this.y);
     }
@@ -102,10 +110,39 @@ class PointClass
     {
         // ...
     }
+
+    setX(x : number)
+    {
+        this.x = x;
+    }
+
+    getX()
+    {
+        return this.x;
+    }
+
+    setY(y : number)
+    {
+        if(y < 0)
+        {
+            throw new Error('y cannot be less than zero');
+        }
+        else
+        {
+            this.y = y;
+        }
+    }
+
+    getY()
+    {
+        return this.y;
+    }
 }
 
 // field : property of a class
 // method : function of a class
+// field & method are known as members
+// constructors are not members
 // pointClass is an object - an instance of the class PointClass
 let pointClass : PointClass;
 // when dealing with custom type, need to explicitly allocate memory.
@@ -117,9 +154,60 @@ pointClass.draw();
 // we can't have multiple constructors in TypeScript
 // ==> make constructor parameters optional
 let pointClassWithoutParameter = new PointClass();
-pointClassWithoutParameter.x = 7;
-pointClassWithoutParameter.y = 2;
+pointClassWithoutParameter.setX(7);
+pointClassWithoutParameter.setY(2);
 pointClassWithoutParameter.draw();
 
 // three access modifiers : public, private, protected
-// by default all variables are public
+// by default all members are public
+
+// when fields are associated with getters and setters
+// they can use the feature of property
+
+class PointClassWithProperty
+{
+    constructor(private _x? : number, private _y? : number)
+    {
+    }
+
+    draw(){// adding public modifier here is redundant: public draw() : since by default, it's public
+        // ...
+        console.log(this._x, this._y);
+    }
+
+    set x(value : number)
+    {
+        this._x = value;
+    }
+
+    get x()
+    {
+        return this._x;
+    }
+
+    set y(value : number)
+    {
+        if(value < 0)
+        {
+            throw new Error('y cannot be less than zero');
+        }
+        else
+        {
+            this._y = value;
+        }
+    }
+
+    get y()
+    {
+        return this._y;
+    }
+}
+
+let pointClassWithProperty = new PointClassWithProperty();
+pointClassWithProperty.x = 5;
+pointClassWithProperty.y = 3;
+
+console.log(pointClassWithProperty.x, pointClassWithProperty.y);
+// even though a property looks like a field of a class
+// internally it's a method in a class
+
